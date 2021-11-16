@@ -1,0 +1,32 @@
+{
+    "name": "questions-and-answers",
+    "version": "1.0.0",
+    "main": "app.js",
+    "repository": "https://github.com/team-elrond/questions-and-answers.git",
+    "license": "MIT",
+    "author": "Joshua Booth <joshua.n.booth@gmail.com>",
+    "contributors": [
+        "Carlos Morales <cmorpv@gmail.com>",
+        "Anthony Psyk <ajpsyk@gmail.com>"
+    ],
+    "scripts": {
+        "start": "node app.js",
+        "dev": "nodemon app.js",
+        "eslint": "npx eslint .",
+        "test": "jest"
+    },
+    "dependencies": {
+        "compression": "^1.7.4",
+        "dotenv": "^10.0.0",
+        "eslint": "^8.2.0",
+        "eslint-config-airbnb-base": "^15.0.0",
+        "eslint-plugin-import": "^2.25.3",
+        "express": "^4.17.1"
+    },
+    "devDependencies": {
+        "jest": "^27.3.1",
+        "jest-progress-bar-reporter": "^1.0.21",
+        "nodemon": "^2.0.15",
+        "supertest": "^6.1.6"
+    }
+}

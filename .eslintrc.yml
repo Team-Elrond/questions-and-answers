@@ -1,0 +1,60 @@
+env:
+  es6: true
+  es2021: true
+  jest: true
+
+parserOptions:
+  ecmaVersion: latest
+
+extends:
+- airbnb-base
+
+rules:
+  arrow-parens: off
+  comma-dangle: off
+  consistent-return: off
+  curly:
+  - error
+  - all
+  default-case: off
+  func-names: off
+  function-paren-newline: off
+  implicit-arrow-linebreak: off
+  max-len: off
+  no-bitwise: off
+  no-cond-assign:
+  - error
+  - except-parens
+  no-loop-func: off
+  no-plusplus: off
+  no-confusing-arrow: off
+  no-console:
+  - warn
+  - allow:
+    - warn
+    - error
+  no-constant-condition: off
+  no-mixed-operators: off
+  no-nested-ternary: off
+  no-param-reassign: off
+  no-restricted-syntax: off
+  no-shadow: off
+  no-undef: warn
+  no-unused-vars: warn
+  no-use-before-define:
+  - warn
+  - functions: false
+    classes: false
+  no-var: off
+  object-curly-newline: off
+  operator-linebreak: off
+  prefer-arrow-callback: warn
+  prefer-destructuring:
+  - off
+  - array: false
+  prefer-template: off
+  quote-props: off
+  vars-on-top: off
+
+  import/no-named-as-default: off
+  import/no-named-as-default-member: off

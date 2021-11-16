@@ -1,0 +1,6 @@
+{
+    "coverageDirectory": "./coverage/",
+    "reporters": ["jest-progress-bar-reporter"],
+    "setupFiles": ["./.jest/configureEnv.js"],
+    "verbose": true
+}
