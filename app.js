@@ -75,6 +75,7 @@ app.get('/qa/questions/:question_id/answers', asyncTry(async (req, res) => {
         LIMIT $2::INT
         OFFSET $3::INT
   `, [question_id, count, (page - 1) * count]));
+  res.type('application/json');
   res.write(`{"question":"${question_id}","page":${page},"count":"${count}","results":[`);
   let needsComma = false;
   let row;
