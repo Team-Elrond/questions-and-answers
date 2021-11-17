@@ -18,14 +18,14 @@
     "dependencies": {
         "compression": "^1.7.4",
         "dotenv": "^10.0.0",
-        "eslint": "^8.2.0",
-        "eslint-config-airbnb-base": "^15.0.0",
-        "eslint-plugin-import": "^2.25.3",
         "express": "^4.17.1",
         "pg": "^8.7.1",
         "pg-cursor": "^2.7.1"
     },
     "devDependencies": {
+        "eslint": "^8.2.0",
+        "eslint-config-airbnb-base": "^15.0.0",
+        "eslint-plugin-import": "^2.25.3",
         "jest": "^27.3.1",
         "jest-progress-bar-reporter": "^1.0.21",
         "nodemon": "^2.0.15",
