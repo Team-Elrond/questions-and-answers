@@ -9,14 +9,29 @@ on:
 jobs:
   build:
     runs-on: ubuntu-latest
+    services:
+      postgres:
+        image: postgres:10.8
+        env:
+          POSTGRES_USER: test
+          POSTGRES_PASSWORD: test
+          POSTGRES_DB: test
+          POSTGRES_PORT: 5432
+        ports:
+          - 5432/tcp
+        options: --health-cmd pg_isready --health-interval 10s --health-timeout 5s --health-retries 5
+
     steps:
     - uses: actions/checkout@v2
     - name: Use Node.js 14.x
+      env:
+        DB_URL: postgresql://test:test@localhost:5432/test
+
       uses: actions/setup-node@v2
       with:
         node-version: 14.x
         cache: yarn
-    - run: |
-        yarn install
-        npx jest --coverage --passWithNoTests
-        npx codecov
+    - run:
+      - yarn install
+      - npx jest --coverage --passWithNoTests
+      - npx codecov
