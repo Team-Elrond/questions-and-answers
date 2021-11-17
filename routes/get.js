@@ -5,7 +5,7 @@ const { asyncTry } = require('../middleware');
 const router = express.Router();
 
 const stmtGetAnswers = `
-    SELECT answer_id, body, date, answerer_name, helpfulness, photos
+    SELECT id as answer_id, body, date, answerer_name, helpfulness, photos
       FROM answer
       WHERE question_id=$1::INT AND reported=FALSE
       ORDER BY answer_id ASC
@@ -26,9 +26,9 @@ router.get('/qa/questions/:question_id/answers', asyncTry(async (req, res) => {
     answer.photos = answer.photos.split(' ');
   }
   res.json({
-    question,
+    question: question.toString(),
     page,
-    count: count.toString(),
+    count,
     results,
   });
 }));

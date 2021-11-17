@@ -14,7 +14,7 @@ beforeAll(() =>
     )
   `).then(() => sql.query(`
     CREATE TABLE IF NOT EXISTS answer (
-        answer_id  serial  PRIMARY KEY,
+        id  serial  PRIMARY KEY,
         question_id  serial,
         body  varchar(1000)  NOT NULL,
         date  timestamp  NOT NULL,
