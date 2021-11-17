@@ -31,7 +31,7 @@ jobs:
       with:
         node-version: 14.x
         cache: yarn
-    - run:
-      - yarn install
-      - npx jest --coverage --passWithNoTests
-      - npx codecov
+    - run: |
+        yarn install
+        npx jest --coverage --passWithNoTests
+        npx codecov
