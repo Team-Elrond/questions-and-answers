@@ -5,10 +5,10 @@ const fs = require('fs');
 const http = require('http');
 const https = require('https');
 
+dotenv.config();
+
 const { requestParser } = require('./middleware');
 const routes = require('./routes');
-
-dotenv.config();
 
 const {
   HTTP_PORT,
