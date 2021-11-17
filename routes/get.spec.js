@@ -64,24 +64,10 @@ describe('GET /qa/questions/:question_id/answers', () => {
   });
 
   it('paginates', async () => {
-    const answer = {
-      answerer_id: 0,
-      question_id: 2,
-      body: 'body',
-      date: new Date(),
-      answerer_name: 'name',
-      answerer_email: 'email',
-      helpfulness: 3,
-      reported: false,
-      photos: 'a b c d',
-    };
     for (let i = 1; i < 20; i += 1) {
-      answer.answerer_id = i;
-      answer.body = i.toString();
-      await sql.query(
-        'INSERT INTO answer VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9)',
-        Object.values(answer)
-      );
+      sample.answer_id = i;
+      sample.body = i.toString();
+      await sendSample();
     }
     await request(app)
       .get('/qa/questions/2/answers?count=3&page=4')
