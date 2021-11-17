@@ -25,14 +25,11 @@ jobs:
     steps:
     - uses: actions/checkout@v2
     - name: Use Node.js 14.x
-      env:
-        DB_URL: postgresql://postgres:postgres@postgres:5432
-
       uses: actions/setup-node@v2
       with:
         node-version: 14.x
         cache: yarn
     - run: |
         yarn install
-        npx jest --coverage --passWithNoTests
+        DB_URL=postgresql://postgres npx jest --coverage --passWithNoTests
         npx codecov
