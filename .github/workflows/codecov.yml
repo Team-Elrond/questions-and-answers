@@ -13,19 +13,20 @@ jobs:
       postgres:
         image: postgres:10.8
         env:
-          POSTGRES_USER: test
-          POSTGRES_PASSWORD: test
-          POSTGRES_DB: test
-          POSTGRES_PORT: 5432
+          POSTGRES_PASSWORD: postgres
         ports:
-          - 5432/5432
-        options: --health-cmd pg_isready --health-interval 10s --health-timeout 5s --health-retries 5
+          - 5432/tcp
+        options: >-
+          --health-cmd pg_isready
+          --health-interval 10s
+          --health-timeout 5s
+          --health-retries 5
 
     steps:
     - uses: actions/checkout@v2
     - name: Use Node.js 14.x
       env:
-        DB_URL: postgresql://test:test@localhost:5432/test
+        DB_URL: postgresql://postgres:5432
 
       uses: actions/setup-node@v2
       with:
