@@ -8,8 +8,20 @@ app.use(require('../middleware/requestParser'));
 app.use(require('./get'));
 
 describe('GET /qa/questions/:question_id/answers', () => {
-  it('sends results', async () => {
-    const answer = {
+  let sample;
+  const sendSample = () => sql.query(
+    'INSERT INTO answer VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9)',
+    Object.values(sample)
+  );
+  const pruneSample = () => {
+    delete sample.reported;
+    delete sample.answerer_email;
+    delete sample.question_id;
+    sample.photos = sample.photos.split(' ');
+  };
+
+  beforeEach(() => {
+    sample = {
       answer_id: 1,
       question_id: 2,
       body: 'body',
@@ -20,40 +32,35 @@ describe('GET /qa/questions/:question_id/answers', () => {
       reported: false,
       photos: 'a b c d',
     };
-    await sql.query(
-      'INSERT INTO answer VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9)',
-      Object.values(answer)
-    );
-    delete answer.reported;
-    delete answer.answerer_email;
-    delete answer.question_id;
-    answer.photos = answer.photos.split(' ');
+  });
+
+  it('sends results', async () => {
+    await sendSample();
+    pruneSample();
     await request(app)
       .get('/qa/questions/2/answers')
       .expect('Content-Type', /application\/json/)
       .expect(200)
-      .expect(res => expect(res.body.results).toEqual([answer]));
+      .expect(res => expect(res.body.results).toEqual([sample]));
   });
 
   it('sends an empty array with no results', async () => {
-    const answer = {
-      answer_id: 1,
-      question_id: 2,
-      body: 'body',
-      date: new Date(),
-      answerer_name: 'name',
-      answerer_email: 'email',
-      helpfulness: 3,
-      reported: false,
-      photos: 'a b c d',
-    };
-    await sql.query(
-      'INSERT INTO answer VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9)',
-      Object.values(answer)
-    );
+    await sendSample();
     await request(app)
       .get('/qa/questions/0/answers')
       .expect(res => expect(res.body.results).toEqual([]));
+  });
+
+  it('hides reported answers', async () => {
+    sample.reported = true;
+    await sendSample();
+    sample.answer_id = 2;
+    sample.reported = false;
+    await sendSample();
+    pruneSample();
+    await request(app)
+      .get('/qa/questions/2/answers')
+      .expect(res => expect(res.body.results).toEqual([sample]));
   });
 
   it('paginates', async () => {

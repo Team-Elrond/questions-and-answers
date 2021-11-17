@@ -29,7 +29,7 @@ router.get('/qa/questions/:question_id/answers', asyncTry(async (req, res) => {
   const cursor = sql.query(new PgCursor(`
       SELECT answer_id, body, date, answerer_name, helpfulness, photos
         FROM answer
-        WHERE question_id=$1::INT
+        WHERE question_id=$1::INT AND reported=FALSE
         ORDER BY answer_id ASC
         LIMIT $2::INT
         OFFSET $3::INT
