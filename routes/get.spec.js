@@ -7,12 +7,42 @@ app.use(express.json());
 app.use(require('../middleware/requestParser'));
 app.use(require('./get'));
 
+const sampleAnswer = () => ({
+  answer_id: 0,
+  question_id: 1,
+  body: 'body',
+  date: new Date().toISOString(),
+  answerer_name: 'name',
+  answerer_email: 'email',
+  helpfulness: 3,
+  reported: false,
+  photos: 'a b c d',
+});
+
+const sendAnswer = (answer) => sql.query(
+  'INSERT INTO answer VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9)',
+  Object.values(answer)
+);
+
+const sampleQuestion = () => ({
+  question_id: 1,
+  product_id: 2,
+  question_body: 'body',
+  question_date: new Date().toISOString(),
+  asker_name: 'name',
+  asker_email: 'email',
+  question_helpfulness: 3,
+  reported: false,
+});
+
+const sendQuestion = (question) => sql.query(
+  'INSERT INTO question VALUES ($1, $2, $3, $4, $5, $6, $7, $8)',
+  Object.values(question)
+);
+
 describe('GET /qa/questions/:question_id/answers', () => {
   let sample;
-  const sendSample = () => sql.query(
-    'INSERT INTO answer VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9)',
-    Object.values(sample)
-  );
+  const sendSample = () => sendAnswer(sample);
   const pruneSample = () => {
     delete sample.reported;
     delete sample.answerer_email;
@@ -20,26 +50,14 @@ describe('GET /qa/questions/:question_id/answers', () => {
     sample.photos = sample.photos.split(' ');
   };
 
-  beforeEach(() => {
-    sample = {
-      answer_id: 1,
-      question_id: 2,
-      body: 'body',
-      date: new Date().toISOString(),
-      answerer_name: 'name',
-      answerer_email: 'email',
-      helpfulness: 3,
-      reported: false,
-      photos: 'a b c d',
-    };
-  });
+  beforeEach(() => { sample = sampleAnswer(); });
 
   it('sends results', async () => {
     await sendSample();
     pruneSample();
 
     const res = await request(app)
-      .get('/qa/questions/2/answers')
+      .get('/qa/questions/1/answers')
       .expect('Content-Type', /application\/json/)
       .expect(200);
 
@@ -64,9 +82,24 @@ describe('GET /qa/questions/:question_id/answers', () => {
     pruneSample();
 
     const res = await request(app)
-      .get('/qa/questions/2/answers');
+      .get('/qa/questions/1/answers');
 
     expect(res.body.results).toEqual([sample]);
+  });
+
+  it('splits photos appropriately', async () => {
+    await sendSample();
+    sample.answer_id = 3;
+    sample.photos = '';
+    await sendSample();
+
+    const res = await request(app)
+      .get('/qa/questions/1/answers');
+
+    const photos = res.body.results
+      .map(answer => answer.photos);
+
+    expect(photos).toEqual([['a', 'b', 'c', 'd'], []]);
   });
 
   it('paginates', async () => {
@@ -77,37 +110,25 @@ describe('GET /qa/questions/:question_id/answers', () => {
     }
 
     const res = await request(app)
-      .get('/qa/questions/2/answers?count=3&page=4');
+      .get('/qa/questions/1/answers?count=3&page=4');
 
-    expect(res.body.results.map(row => row.body)).toEqual(['10', '11', '12']);
+    const bodies = res.body.results
+      .map(answer => answer.body);
+
+    expect(bodies).toEqual(['10', '11', '12']);
   });
 });
 
 describe('GET /qa/questions', () => {
   let sample;
-  const sendSample = () => sql.query(
-    'INSERT INTO question VALUES ($1, $2, $3, $4, $5, $6, $7, $8)',
-    Object.values(sample)
-  );
+  const sendSample = () => sendQuestion(sample);
   const pruneSample = () => {
-    delete sample.reported;
     delete sample.asker_email;
     delete sample.product_id;
     sample.answers = {};
   };
 
-  beforeEach(() => {
-    sample = {
-      question_id: 1,
-      product_id: 2,
-      question_body: 'body',
-      question_date: new Date().toISOString(),
-      asker_name: 'name',
-      asker_email: 'email',
-      question_helpfulness: 3,
-      reported: false,
-    };
-  });
+  beforeEach(() => { sample = sampleQuestion(); });
 
   it('sends results', async () => {
     await sendSample();
@@ -154,22 +175,14 @@ describe('GET /qa/questions', () => {
     const res = await request(app)
       .get('/qa/questions?product_id=2&count=3&page=4');
 
-    expect(res.body.results.map(row => row.question_body))
-      .toEqual(['10', '11', '12']);
+    const bodies = res.body.results
+      .map(question => question.question_body);
+
+    expect(bodies).toEqual(['10', '11', '12']);
   });
 
   it('displays only the corresponding answers', async () => {
-    const answer = {
-      answer_id: 1,
-      question_id: 2,
-      body: 'body',
-      date: new Date().toISOString(),
-      answerer_name: 'name',
-      answerer_email: 'email',
-      helpfulness: 3,
-      reported: false,
-      photos: 'a b c d',
-    };
+    const answer = sampleAnswer();
     for (let i = 0; i <= 5; i += 1) {
       sample.product_id = i === 0 || i === 5 ? i : 3;
       sample.question_id = i;
@@ -177,17 +190,34 @@ describe('GET /qa/questions', () => {
       answer.question_id = i;
       for (let j = 1; j <= 2; j += 1) {
         answer.answer_id = i * 10 + j;
-        sql.query(
-          'INSERT INTO answer VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9)',
-          Object.values(answer)
-        );
+        await sendAnswer(answer);
       }
     }
 
     const res = await request(app)
       .get('/qa/questions?product_id=3&count=2&page=2');
 
-    expect(res.body.results.flatMap(row => Object.keys(row.answers)))
-      .toEqual(['31', '32', '41', '42']);
+    const answers = res.body.results
+      .flatMap(question => Object.keys(question.answers));
+
+    expect(answers).toEqual(['31', '32', '41', '42']);
+  });
+
+  it('splits photos appropriately', async () => {
+    await sendSample();
+    const answer = sampleAnswer();
+    await sendAnswer(answer);
+    answer.answer_id += 1;
+    answer.photos = '';
+    await sendAnswer(answer);
+
+    const res = await request(app)
+      .get('/qa/questions?product_id=2');
+
+    const photos = res.body.results
+      .flatMap(question => Object.values(question.answers))
+      .map(answer => answer.photos);
+
+    expect(photos).toEqual([['a', 'b', 'c', 'd'], []]);
   });
 });

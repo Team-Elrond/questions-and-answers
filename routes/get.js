@@ -23,7 +23,7 @@ router.get('/qa/questions/:question_id/answers', asyncTry(async (req, res) => {
     values: [question, count, (page - 1) * count],
   });
   for (const answer of results) {
-    answer.photos = answer.photos.split(' ');
+    answer.photos = answer.photos.length === 0 ? [] : answer.photos.split(' ');
   }
   res.json({
     question: question.toString(),
@@ -78,7 +78,7 @@ router.get('/qa/questions', asyncTry(async (req, res) => {
       if (question.question_id !== answer.question_id) {
         question = questions.get(answer.question_id);
       }
-      answer.photos = answer.photos.split(' ');
+      answer.photos = answer.photos.length === 0 ? [] : answer.photos.split(' ');
       question.answers[answer.id] = answer;
       delete answer.question_id;
     }
