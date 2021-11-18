@@ -1,6 +1,6 @@
 # Atelier Questions & Answers API
 
-![tests](https://github.com/Team-Elrond/questions-and-answers/actions/workflows/node.js.yml/badge.svg) [![codecov](https://codecov.io/gh/Team-Elrond/questions-and-answers/branch/main/graph/badge.svg?token=5k2aP6VYJQ)](https://codecov.io/gh/Team-Elrond/questions-and-answers)
+![tests](https://github.com/Team-Elrond/questions-and-answers/actions/workflows/codecov.yml/badge.svg) [![codecov](https://codecov.io/gh/Team-Elrond/questions-and-answers/branch/main/graph/badge.svg?token=5k2aP6VYJQ)](https://codecov.io/gh/Team-Elrond/questions-and-answers)
 
 ## Setup
 
