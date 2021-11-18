@@ -32,4 +32,18 @@ router.put('/qa/answers/:answer_id/report', asyncTry(async (req, res) => {
   res.sendStatus(204);
 }));
 
+const stmtHelpfulQuestion = `
+  UPDATE question
+    SET question_helpfulness = question_helpfulness + 1
+    WHERE question_id = $1::INT
+`;
+router.put('/qa/questions/:question_id/helpful', asyncTry(async (req, res) => {
+  await sql.query({
+    name: 'helpful-question',
+    text: stmtHelpfulQuestion,
+    values: [req.paramInt('question_id')],
+  });
+  res.sendStatus(204);
+}));
+
 module.exports = router;
