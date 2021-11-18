@@ -7,7 +7,7 @@ const router = express.Router();
 const stmtGetAnswers = `
     SELECT id as answer_id, body, date, answerer_name, helpfulness, photos
       FROM answer
-      WHERE question_id=$1::INT AND reported=FALSE
+      WHERE question_id = $1::INT AND reported = FALSE
       ORDER BY answer_id ASC
       LIMIT $2::INT
       OFFSET $3::INT
@@ -36,7 +36,7 @@ router.get('/qa/questions/:question_id/answers', asyncTry(async (req, res) => {
 const stmtGetQuestions = `
   SELECT question_id, question_body, question_date, asker_name, question_helpfulness, reported
     FROM question
-    WHERE product_id=$1::INT AND reported=FALSE
+    WHERE product_id = $1::INT AND reported=FALSE
     ORDER BY question_id ASC
     LIMIT $2::INT
     OFFSET $3::INT
@@ -73,7 +73,7 @@ router.get('/qa/questions', asyncTry(async (req, res) => {
       text: stmtGetAnswersToQuestions,
       values: [product_id, minQ, maxQ],
     });
-    let question = { };
+    let question = {};
     for (const answer of answers) {
       if (question.question_id !== answer.question_id) {
         question = questions.get(answer.question_id);
