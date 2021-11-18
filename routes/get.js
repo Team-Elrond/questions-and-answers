@@ -36,7 +36,7 @@ router.get('/qa/questions/:question_id/answers', asyncTry(async (req, res) => {
 const stmtGetQuestions = `
   SELECT question_id, question_body, question_date, asker_name, question_helpfulness, reported
     FROM question
-    WHERE product_id = $1::INT AND reported=FALSE
+    WHERE product_id = $1::INT AND reported = FALSE
     ORDER BY question_id ASC
     LIMIT $2::INT
     OFFSET $3::INT
@@ -49,6 +49,8 @@ const stmtGetAnswersToQuestions = `
     WHERE product_id=$1::INT
       AND answer.question_id >= $2::INT
       AND answer.question_id <= $3::INT
+      AND question.reported = FALSE
+      AND answer.reported = FALSE
     order by answer.question_id ASC
 `;
 router.get('/qa/questions', asyncTry(async (req, res) => {

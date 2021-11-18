@@ -19,7 +19,7 @@ const sampleAnswer = () => ({
   photos: 'a b c d',
 });
 
-const sendAnswer = (answer) => sql.query(
+const sendAnswer = async (answer) => sql.query(
   'INSERT INTO answer VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9)',
   Object.values(answer)
 );
@@ -35,14 +35,14 @@ const sampleQuestion = () => ({
   reported: false,
 });
 
-const sendQuestion = (question) => sql.query(
+const sendQuestion = async (question) => sql.query(
   'INSERT INTO question VALUES ($1, $2, $3, $4, $5, $6, $7, $8)',
   Object.values(question)
 );
 
 describe('GET /qa/questions/:question_id/answers', () => {
   let sample;
-  const sendSample = () => sendAnswer(sample);
+  const sendSample = async () => sendAnswer(sample);
   const pruneSample = () => {
     delete sample.reported;
     delete sample.answerer_email;
@@ -121,7 +121,7 @@ describe('GET /qa/questions/:question_id/answers', () => {
 
 describe('GET /qa/questions', () => {
   let sample;
-  const sendSample = () => sendQuestion(sample);
+  const sendSample = async () => sendQuestion(sample);
   const pruneSample = () => {
     delete sample.asker_email;
     delete sample.product_id;
@@ -188,7 +188,8 @@ describe('GET /qa/questions', () => {
       sample.question_id = i;
       await sendSample();
       answer.question_id = i;
-      for (let j = 1; j <= 2; j += 1) {
+      for (let j = 0; j <= 2; j += 1) {
+        answer.reported = !j;
         answer.answer_id = i * 10 + j;
         await sendAnswer(answer);
       }
