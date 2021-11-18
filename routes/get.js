@@ -34,7 +34,7 @@ router.get('/qa/questions/:question_id/answers', asyncTry(async (req, res) => {
 }));
 
 const stmtGetQuestions = `
-  SELECT question_id, question_body, question_date, asker_name, question_helpfulness
+  SELECT question_id, question_body, question_date, asker_name, question_helpfulness, reported
     FROM question
     WHERE product_id=$1::INT AND reported=FALSE
     ORDER BY question_id ASC
@@ -80,6 +80,7 @@ router.get('/qa/questions', asyncTry(async (req, res) => {
       }
       answer.photos = answer.photos.split(' ');
       question.answers[answer.id] = answer;
+      delete answer.question_id;
     }
   }
   res.json({
