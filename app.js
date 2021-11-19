@@ -23,6 +23,7 @@ app.use(express.json());
 app.use(requestParser);
 
 app.use(routes.get);
+app.use(routes.post);
 app.use(routes.put);
 
 if (HTTP_PORT) {

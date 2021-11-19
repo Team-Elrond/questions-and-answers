@@ -12,7 +12,6 @@ const stmtGetAnswers = `
       LIMIT $2::INT
       OFFSET $3::INT
 `;
-
 router.get('/qa/questions/:question_id/answers', asyncTry(async (req, res) => {
   const question = req.paramInt('question_id');
   const page = req.queryInt('page', 1);
