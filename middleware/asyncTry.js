@@ -10,9 +10,12 @@ function asyncTry(func) {
         const code = err.status || err.statusCode;
         if (res.headersSent) {
           res.end(err.message);
+        } else if (err.message.indexOf('foreign key constraint') !== -1) {
+          res.sendStatus(404);
         } else if (code !== undefined) {
-          res.sendStatus(code);
+          res.status(code).send(err.message);
         } else {
+          console.error(err.stack);
           res.status(500).send(err.message);
         }
       });
