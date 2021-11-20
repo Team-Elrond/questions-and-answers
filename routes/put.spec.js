@@ -1,118 +1,111 @@
-const express = require('express');
 const request = require('supertest');
-const sql = require('../sql');
+const {
+  app,
+  createAnswer,
+  createQuestion,
+  getAnswer,
+  getQuestion,
+} = require('../jest/common');
 
-const app = express();
-app.use(express.json());
-app.use(require('../middleware/requestParser'));
-app.use(require('./put'));
-
-beforeEach(async () => {
-  const now = new Date().toISOString();
-  await Promise.all([1, 2].map(async (id) =>
-    sql.query(
-      'INSERT INTO question VALUES ($1, 2, \'\', $2, \'\', \'\', 0, FALSE)',
-      [id, now]
-    )
-  ));
-  await Promise.all([1, 2].map(async (id) =>
-    sql.query(
-      'INSERT INTO answer VALUES ($1, 2, \'\', $2, \'\', \'\', 0, FALSE, \'\')',
-      [id, now]
-    )
-  ));
-});
-
-const getQuestions = async () =>
-  sql.query('SELECT * FROM question ORDER BY question_id ASC');
-
-const getAnswers = async () =>
-  sql.query('SELECT * FROM answer ORDER BY id ASC');
+const ID = 1000;
 
 describe('PUT /qa/questions/:question_id/helpful', () => {
   it('increments helpfulness by 1', async () => {
+    const id1 = await createQuestion(ID);
+    const id2 = await createQuestion(ID);
+
     await request(app)
-      .put('/qa/questions/2/helpful')
+      .put(`/qa/questions/${id1}/helpful`)
       .expect(204);
 
-    const { rows } = await getQuestions();
-    const helpfulness = rows
-      .map(question => question.question_helpfulness);
-    expect(helpfulness).toEqual([0, 1]);
+    const question1 = await getQuestion(id1);
+    expect(question1.question_helpfulness).toBe(1);
+    const question2 = await getQuestion(id2);
+    expect(question2.question_helpfulness).toBe(0);
   });
 
   it('tolerates repeated requests', async () => {
+    const question_id = await createQuestion(ID);
     await Promise.all(Array(100).fill(1).map(async () =>
-      request(app).put('/qa/questions/1/helpful')
+      request(app).put(`/qa/questions/${question_id}/helpful`)
     ));
 
-    const { rows } = await getQuestions();
-    expect(rows[0].question_helpfulness).toEqual(100);
+    const question = await getQuestion(question_id);
+    expect(question.question_helpfulness).toBe(100);
   });
 });
 
 describe('PUT /qa/answers/:answer_id/helpful', () => {
   it('increments helpfulness by 1', async () => {
+    const id1 = await createAnswer(ID);
+    const id2 = await createAnswer(ID);
     await request(app)
-      .put('/qa/answers/2/helpful')
+      .put(`/qa/answers/${id1}/helpful`)
       .expect(204);
 
-    const { rows } = await getAnswers();
-    const helpfulness = rows
-      .map(answer => answer.helpfulness);
-    expect(helpfulness).toEqual([0, 1]);
+    const answer1 = await getAnswer(id1);
+    expect(answer1.helpfulness).toBe(1);
+    const answer2 = await getAnswer(id2);
+    expect(answer2.helpfulness).toBe(0);
   });
 
   it('tolerates repeated requests', async () => {
+    const answer_id = await createAnswer(ID);
     await Promise.all(Array(100).fill(1).map(async () =>
-      request(app).put('/qa/answers/1/helpful')
+      request(app).put(`/qa/answers/${answer_id}/helpful`)
     ));
 
-    const { rows } = await getAnswers();
-    expect(rows[0].helpfulness).toEqual(100);
+    const answer = await getAnswer(answer_id);
+    expect(answer.helpfulness).toBe(100);
   });
 });
 
 describe('PUT /qa/questions/:question_id/report', () => {
   it('reports a question', async () => {
+    const id1 = await createQuestion(ID);
+    const id2 = await createQuestion(ID);
     await request(app)
-      .put('/qa/questions/2/report')
+      .put(`/qa/questions/${id1}/report`)
       .expect(204);
 
-    const { rows } = await getQuestions();
-    const reported = rows
-      .map(question => question.reported);
-    expect(reported).toEqual([false, true]);
+    const question1 = await getQuestion(id1);
+    expect(question1.reported).toBe(true);
+    const question2 = await getQuestion(id2);
+    expect(question2.reported).toBe(false);
   });
 
   it('tolerates repeated requests', async () => {
+    const question_id = await createQuestion(ID);
     await Promise.all(Array(100).fill(1).map(async () =>
-      request(app).put('/qa/questions/1/report')
+      request(app).put(`/qa/questions/${question_id}/report`)
     ));
 
-    const { rows } = await getQuestions();
-    expect(rows[0].reported).toEqual(true);
+    const question = await getQuestion(question_id);
+    expect(question.reported).toBe(true);
   });
 });
 
 describe('PUT /qa/answers/:answer_id/report', () => {
-  it('reports a question', async () => {
+  it('reports an answer', async () => {
+    const id1 = await createAnswer(ID);
+    const id2 = await createAnswer(ID);
     await request(app)
-      .put('/qa/answers/2/report')
+      .put(`/qa/answers/${id1}/report`)
       .expect(204);
 
-    const { rows } = await getAnswers();
-    const reported = rows
-      .map(answer => answer.reported);
-    expect(reported).toEqual([false, true]);
+    const answer1 = await getAnswer(id1);
+    expect(answer1.reported).toBe(true);
+    const answer2 = await getAnswer(id2);
+    expect(answer2.reported).toBe(false);
   });
 
   it('tolerates repeated requests', async () => {
+    const answer_id = await createAnswer(ID);
     await Promise.all(Array(100).fill(1).map(async () =>
-      request(app).put('/qa/answers/1/report')
+      request(app).put(`/qa/answers/${answer_id}/report`)
     ));
 
-    const { rows } = await getAnswers();
-    expect(rows[0].reported).toEqual(true);
+    const answer = await getAnswer(answer_id);
+    expect(answer.reported).toBe(true);
   });
 });
