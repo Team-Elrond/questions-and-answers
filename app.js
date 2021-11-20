@@ -1,4 +1,5 @@
 const compression = require('compression');
+const cors = require('cors');
 const dotenv = require('dotenv');
 const express = require('express');
 const fs = require('fs');
@@ -19,6 +20,7 @@ const {
 
 const app = express();
 app.use(compression());
+app.use(cors());
 app.use(express.json());
 app.use(requestParser);
 
