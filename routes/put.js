@@ -15,8 +15,8 @@ async function tryPut(res, query) {
 
 const stmtReportQuestion = `
   UPDATE question
-    SET reported = TRUE
-    WHERE question_id = $1::INT
+  SET reported = TRUE
+  WHERE question_id = $1::INT
 `;
 router.put('/qa/questions/:question_id/report', (req, res) => tryPut(res, {
   name: 'report-question',
@@ -26,8 +26,8 @@ router.put('/qa/questions/:question_id/report', (req, res) => tryPut(res, {
 
 const stmtReportAnswer = `
   UPDATE answer
-    SET reported = TRUE
-    WHERE id = $1::INT
+  SET reported = TRUE
+  WHERE id = $1::INT
 `;
 router.put('/qa/answers/:answer_id/report', (req, res) => tryPut(res, {
   name: 'report-answer',
@@ -37,8 +37,8 @@ router.put('/qa/answers/:answer_id/report', (req, res) => tryPut(res, {
 
 const stmtHelpfulQuestion = `
   UPDATE question
-    SET question_helpfulness = question_helpfulness + 1
-    WHERE question_id = $1::INT
+  SET question_helpfulness = question_helpfulness + 1
+  WHERE question_id = $1::INT
 `;
 router.put('/qa/questions/:question_id/helpful', (req, res) => tryPut(res, {
   name: 'helpful-question',
@@ -48,8 +48,8 @@ router.put('/qa/questions/:question_id/helpful', (req, res) => tryPut(res, {
 
 const stmtHelpfulAnswer = `
   UPDATE answer
-    SET helpfulness = helpfulness + 1
-    WHERE id = $1::INT
+  SET helpfulness = helpfulness + 1
+  WHERE id = $1::INT
 `;
 router.put('/qa/answers/:answer_id/helpful', (req, res) => tryPut(res, {
   name: 'helpful-answer',

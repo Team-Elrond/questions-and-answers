@@ -5,8 +5,14 @@ const { asyncTry } = require('../middleware');
 const router = express.Router();
 
 const stmtCreateQuestion = `
-  INSERT INTO question (product_id, question_body, asker_name, asker_email)
-    VALUES ($1::INT, $2::VARCHAR, $3::VARCHAR, $4::VARCHAR)
+  INSERT INTO question (
+    product_id,
+    question_body,
+    asker_name,
+    asker_email
+  )
+  VALUES ($1::INT, $2::VARCHAR, $3::VARCHAR, $4::VARCHAR)
+  RETURNING (question_id)
 `;
 router.post('/qa/questions', asyncTry(async (req, res) => {
   const product_id = req.bodyInt('product_id');
@@ -26,8 +32,15 @@ router.post('/qa/questions', asyncTry(async (req, res) => {
 }));
 
 const stmtCreateAnswer = `
-  INSERT INTO answer (question_id, body, answerer_name, answerer_email, photos)
-    VALUES ($1::INT, $2::VARCHAR, $3::VARCHAR, $4::VARCHAR, $5::VARCHAR)
+  INSERT INTO answer (
+    question_id,
+    body,
+    answerer_name,
+    answerer_email,
+    photos
+  )
+  VALUES ($1::INT, $2::VARCHAR, $3::VARCHAR, $4::VARCHAR, $5::VARCHAR)
+  RETURNING (id)
 `;
 router.post('/qa/questions/:question_id/answers', asyncTry(async (req, res) => {
   const question_id = req.paramInt('question_id');
