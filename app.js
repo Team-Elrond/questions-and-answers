@@ -26,6 +26,10 @@ app.use(routes.get);
 app.use(routes.post);
 app.use(routes.put);
 
+app.get('/loaderio-39fdac933c692400423429dbc36c135b', (req, res) =>
+  res.send('loaderio-39fdac933c692400423429dbc36c135b')
+);
+
 if (HTTP_PORT) {
   http.createServer(app).listen(HTTP_PORT);
 }
