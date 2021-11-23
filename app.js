@@ -8,7 +8,7 @@ const https = require('https');
 
 dotenv.config();
 
-const { requestParser } = require('./middleware');
+const { requestParser } = require('@atelier/util');
 const routes = require('./routes');
 
 const {

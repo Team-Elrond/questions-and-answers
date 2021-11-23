@@ -1,24 +1,15 @@
 const express = require('express');
+const { tryPut } = require('@atelier/util');
 const sql = require('../sql');
 
 const router = express.Router();
-
-async function tryPut(res, query) {
-  try {
-    const { rowCount } = await sql.query(query);
-    res.sendStatus(rowCount === 0 ? 404 : 204);
-  } catch (err) {
-    console.error(err.stack);
-    res.status(500).send(err.message);
-  }
-}
 
 const stmtReportQuestion = `
   UPDATE question
   SET reported = TRUE
   WHERE question_id = $1::INT
 `;
-router.put('/qa/questions/:question_id/report', (req, res) => tryPut(res, {
+router.put('/qa/questions/:question_id/report', (req, res) => tryPut(sql, res, {
   name: 'report-question',
   text: stmtReportQuestion,
   values: [req.paramInt('question_id')],
@@ -29,7 +20,7 @@ const stmtReportAnswer = `
   SET reported = TRUE
   WHERE id = $1::INT
 `;
-router.put('/qa/answers/:answer_id/report', (req, res) => tryPut(res, {
+router.put('/qa/answers/:answer_id/report', (req, res) => tryPut(sql, res, {
   name: 'report-answer',
   text: stmtReportAnswer,
   values: [req.paramInt('answer_id')],
@@ -40,7 +31,7 @@ const stmtHelpfulQuestion = `
   SET question_helpfulness = question_helpfulness + 1
   WHERE question_id = $1::INT
 `;
-router.put('/qa/questions/:question_id/helpful', (req, res) => tryPut(res, {
+router.put('/qa/questions/:question_id/helpful', (req, res) => tryPut(sql, res, {
   name: 'helpful-question',
   text: stmtHelpfulQuestion,
   values: [req.paramInt('question_id')],
@@ -51,7 +42,7 @@ const stmtHelpfulAnswer = `
   SET helpfulness = helpfulness + 1
   WHERE id = $1::INT
 `;
-router.put('/qa/answers/:answer_id/helpful', (req, res) => tryPut(res, {
+router.put('/qa/answers/:answer_id/helpful', (req, res) => tryPut(sql, res, {
   name: 'helpful-answer',
   text: stmtHelpfulAnswer,
   values: [req.paramInt('answer_id')],

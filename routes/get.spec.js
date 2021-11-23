@@ -4,7 +4,7 @@ const sql = require('../sql');
 
 const app = express();
 app.use(express.json());
-app.use(require('../middleware/requestParser'));
+app.use(require('@atelier/util').requestParser);
 app.use(require('./get'));
 
 const sampleAnswer = () => ({
