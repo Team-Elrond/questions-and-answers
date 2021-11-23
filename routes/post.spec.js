@@ -1,11 +1,5 @@
-const express = require('express');
 const request = require('supertest');
-const sql = require('../sql');
-
-const app = express();
-app.use(express.json());
-app.use(require('@atelier/util').requestParser);
-app.use(require('./post'));
+const { app, getQuestion, getAnswer } = require('../jest/common');
 
 describe('POST /qa/questions', () => {
   let sampleRequest;
@@ -21,12 +15,12 @@ describe('POST /qa/questions', () => {
   });
 
   it('creates a question', async () => {
-    await request(app)
+    const { text: question_id } = await request(app)
       .post('/qa/questions')
       .send(sampleRequest)
       .expect(201);
 
-    const { rows: [created] } = await sql.query('SELECT * FROM question');
+    const created = await getQuestion(Number(question_id));
     delete created.question_date;
     delete created.question_id;
     expect(created).toEqual({
@@ -62,12 +56,13 @@ describe('POST /qa/questions/:question_id/answers', () => {
   });
 
   it('creates an answer', async () => {
-    await request(app)
+    const { text: answer_id } = await request(app)
       .post('/qa/questions/1/answers')
       .send(sampleRequest)
       .expect(201);
 
-    const { rows: [created] } = await sql.query('SELECT * FROM answer');
+    const created = await getAnswer(Number(answer_id));
+
     delete created.date;
     delete created.id;
     expect(created).toEqual({

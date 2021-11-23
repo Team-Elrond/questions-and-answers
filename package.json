@@ -1,5 +1,5 @@
 {
-    "name": "questions-and-answers",
+    "name": "@atelier/questions-and-answers",
     "version": "1.0.0",
     "main": "app.js",
     "repository": "https://github.com/team-elrond/questions-and-answers.git",
@@ -12,7 +12,7 @@
     "scripts": {
         "start": "node app.js",
         "dev": "nodemon app.js",
-        "eslint": "npx eslint .",
+        "lint": "eslint .",
         "test": "jest --runInBand"
     },
     "dependencies": {
