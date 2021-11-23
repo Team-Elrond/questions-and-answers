@@ -26,8 +26,7 @@ describe('POST /qa/questions', () => {
       .send(sampleRequest)
       .expect(201);
 
-    const { rows } = await sql.query('SELECT * FROM question');
-    const created = rows[0];
+    const { rows: [created] } = await sql.query('SELECT * FROM question');
     delete created.question_date;
     delete created.question_id;
     expect(created).toEqual({
@@ -68,11 +67,10 @@ describe('POST /qa/questions/:question_id/answers', () => {
       .send(sampleRequest)
       .expect(201);
 
-    const { rows } = await sql.query('SELECT * FROM answer');
-    const created = rows[0];
+    const { rows: [created] } = await sql.query('SELECT * FROM answer');
     delete created.date;
     delete created.id;
-    expect(rows[0]).toEqual({
+    expect(created).toEqual({
       question_id: 1,
       body: '2',
       answerer_name: '3',

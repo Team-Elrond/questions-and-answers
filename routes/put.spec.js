@@ -46,8 +46,8 @@ describe('PUT /qa/questions/:question_id/helpful', () => {
       request(app).put('/qa/questions/1/helpful')
     ));
 
-    const { rows } = await getQuestions();
-    expect(rows[0].question_helpfulness).toEqual(100);
+    const { rows: [result] } = await getQuestions();
+    expect(result.question_helpfulness).toEqual(100);
   });
 });
 
@@ -68,8 +68,8 @@ describe('PUT /qa/answers/:answer_id/helpful', () => {
       request(app).put('/qa/answers/1/helpful')
     ));
 
-    const { rows } = await getAnswers();
-    expect(rows[0].helpfulness).toEqual(100);
+    const { rows: [result] } = await getAnswers();
+    expect(result.helpfulness).toEqual(100);
   });
 });
 
@@ -90,8 +90,8 @@ describe('PUT /qa/questions/:question_id/report', () => {
       request(app).put('/qa/questions/1/report')
     ));
 
-    const { rows } = await getQuestions();
-    expect(rows[0].reported).toEqual(true);
+    const { rows: [result] } = await getQuestions();
+    expect(result.reported).toEqual(true);
   });
 });
 
@@ -112,7 +112,7 @@ describe('PUT /qa/answers/:answer_id/report', () => {
       request(app).put('/qa/answers/1/report')
     ));
 
-    const { rows } = await getAnswers();
-    expect(rows[0].reported).toEqual(true);
+    const { rows: [result] } = await getAnswers();
+    expect(result.reported).toEqual(true);
   });
 });

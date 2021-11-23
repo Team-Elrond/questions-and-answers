@@ -6,12 +6,12 @@ const router = express.Router();
 
 const stmtGetAnswers = `
     SELECT
-      id as answer_id,
+      id AS answer_id,
       body,
       date,
       answerer_name,
       helpfulness,
-      string_to_array(photos, ' ') as photos
+      STRING_TO_ARRAY(photos, ' ') AS photos
     FROM answer
     WHERE question_id = $1::INT AND reported = FALSE
     ORDER BY answer_id ASC
@@ -28,7 +28,7 @@ router.get('/qa/questions/:question_id/answers', asyncTry(async (req, res) => {
     values: [question, count, (page - 1) * count],
   });
   res.json({
-    question: question.toString(),
+    question: req.param.question_id,
     page,
     count,
     results,
@@ -44,7 +44,7 @@ const stmtGetQuestions = `
     question_helpfulness,
     question.reported,
     COALESCE(
-      json_object_agg(answer.id, json_build_object(
+      JSONB_OBJECT_AGG(answer.id, JSONB_BUILD_OBJECT(
         'id', answer.id,
         'body', answer.body,
         'date', answer.date,
@@ -52,7 +52,7 @@ const stmtGetQuestions = `
         'helpfulness', answer.helpfulness,
         'photos', string_to_array(answer.photos, ' ')
       )) FILTER (WHERE answer.id IS NOT NULL),
-      '{}'::json
+      '{}'
     ) AS answers
   FROM question
   LEFT JOIN answer
@@ -75,7 +75,7 @@ router.get('/qa/questions', asyncTry(async (req, res) => {
     values: [product_id, count, (page - 1) * count],
   });
   res.json({
-    product_id: product_id.toString(),
+    product_id: req.query.product_id,
     results,
   });
 }));
