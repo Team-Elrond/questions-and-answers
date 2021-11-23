@@ -1,7 +1,7 @@
 const express = require('express');
 const request = require('supertest');
+const { requestParser } = require('@atelier/util');
 const routes = require('../routes');
-const requestParser = require('../middleware/requestParser');
 const sql = require('../sql');
 
 const app = express();

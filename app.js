@@ -1,4 +1,5 @@
 const compression = require('compression');
+const cors = require('cors');
 const dotenv = require('dotenv');
 const express = require('express');
 const fs = require('fs');
@@ -7,7 +8,7 @@ const https = require('https');
 
 dotenv.config();
 
-const { requestParser } = require('./middleware');
+const { requestParser } = require('@atelier/util');
 const routes = require('./routes');
 
 const {
@@ -19,6 +20,7 @@ const {
 
 const app = express();
 app.use(compression());
+app.use(cors());
 app.use(express.json());
 app.use(requestParser);
 
