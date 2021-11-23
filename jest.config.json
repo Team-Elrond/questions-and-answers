@@ -1,7 +1,7 @@
 {
     "coverageDirectory": "./coverage/",
     "reporters": ["jest-progress-bar-reporter"],
-    "setupFiles": ["./.jest/configureEnv.js"],
-    "setupFilesAfterEnv": ["./.jest/cleanDatabase.js"],
+    "setupFiles": ["./jest/configureEnv.js"],
+    "setupFilesAfterEnv": ["./jest/cleanDatabase.js"],
     "verbose": true
 }
