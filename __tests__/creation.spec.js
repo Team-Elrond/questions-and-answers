@@ -13,7 +13,7 @@ it('displays a created question', async () => {
   const bodies = res.body.results
     .map(question => question.question_body);
 
-  expect(bodies).toEqual(['success']);
+  expect(bodies).toEqual(['Body']);
 });
 
 it('displays a created answer', async () => {
@@ -27,7 +27,7 @@ it('displays a created answer', async () => {
   const bodies = res.body.results
     .map(answer => answer.body);
 
-  expect(bodies).toEqual(['success']);
+  expect(bodies).toEqual(['Body']);
 });
 
 it('displays child answers', async () => {
@@ -40,5 +40,5 @@ it('displays child answers', async () => {
 
   const answer = res.body.results[0].answers[answer_id];
   expect(answer).not.toBeNull();
-  expect(answer.body).toBe('success');
+  expect(answer.body).toBe('Body');
 });

@@ -13,6 +13,7 @@ app.use(routes.put);
 
 module.exports.app = app;
 
+/** @type {(question_id: number) => Promise<any>} */
 module.exports.getQuestion = async function getQuestion(question_id) {
   const { rows } = await sql.query({
     name: 'get-question',
@@ -22,6 +23,7 @@ module.exports.getQuestion = async function getQuestion(question_id) {
   return rows[0];
 };
 
+/** @type {(question_id: number) => Promise<any>} */
 module.exports.getAnswer = async function getAnswer(answer_id) {
   const { rows } = await sql.query({
     name: 'get-answer',
@@ -31,25 +33,27 @@ module.exports.getAnswer = async function getAnswer(answer_id) {
   return rows[0];
 };
 
+/** @type {(product_id: number) => Promise<number>} */
 module.exports.createQuestion = async function createQuestion(product_id) {
   const res = await request(app)
     .post('/qa/questions')
     .send({
       product_id,
-      body: 'success',
-      name: 'name',
+      body: 'Body',
+      name: 'Name',
       email: 'e@mail.com',
     })
     .expect(201);
   return Number(res.text);
 };
 
+/** @type {(question_id: number) => Promise<number>} */
 module.exports.createAnswer = async function createAnswer(question_id) {
   const res = await request(app)
     .post(`/qa/questions/${question_id}/answers`)
     .send({
-      body: 'success',
-      name: 'name',
+      body: 'Body',
+      name: 'Name',
       email: 'e@mail.com',
       photos: ['a', 'b', 'c', 'd'],
     })

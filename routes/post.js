@@ -23,13 +23,12 @@ router.post('/qa/questions', asyncTry(async (req, res) => {
     res.status(422).send('Invalid e-mail');
     return;
   }
-  const { rows } = await sql.query({
+  const { rows: [{ question_id }] } = await sql.query({
     name: 'create-question',
     text: stmtCreateQuestion,
     values: [product_id, question_body, asker_name, asker_email],
   });
-  res
-    .status(201).type('text/plain').send(rows[0].question_id.toString());
+  res.status(201).type('text/plain').send(question_id.toString());
 }));
 
 const stmtCreateAnswer = `
@@ -64,7 +63,10 @@ router.post('/qa/questions/:question_id/answers', asyncTry(async (req, res) => {
     text: stmtCreateAnswer,
     values: [question_id, body, answerer_name, answerer_email, photos.join(' ')],
   });
-  res.status(201).type('text/plain').send(rows[0].id.toString());
+  res
+    .status(201)
+    .type('text/plain')
+    .send(rows[0].id.toString());
 }));
 
 module.exports = router;

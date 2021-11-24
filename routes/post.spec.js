@@ -22,8 +22,8 @@ describe('POST /qa/questions', () => {
 
     const created = await getQuestion(Number(question_id));
     delete created.question_date;
-    delete created.question_id;
     expect(created).toEqual({
+      question_id: Number(question_id),
       product_id: 1,
       question_body: '2',
       asker_name: '3',
@@ -64,8 +64,8 @@ describe('POST /qa/questions/:question_id/answers', () => {
     const created = await getAnswer(Number(answer_id));
 
     delete created.date;
-    delete created.id;
     expect(created).toEqual({
+      id: Number(answer_id),
       question_id: 1,
       body: '2',
       answerer_name: '3',

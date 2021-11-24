@@ -11,7 +11,7 @@ const stmtGetAnswers = `
       date,
       answerer_name,
       helpfulness,
-      STRING_TO_ARRAY(photos, ' ') AS photos
+      string_to_array(photos, ' ') AS photos
     FROM answer
     WHERE question_id = $1::INT AND reported = FALSE
     ORDER BY answer_id ASC
@@ -28,8 +28,8 @@ router.get('/qa/questions/:question_id/answers', asyncTry(async (req, res) => {
     values: [question, count, (page - 1) * count],
   });
   res.json({
-    question: req.param.question_id,
-    page,
+    question: req.params.question_id,
+    page: req.query.page,
     count,
     results,
   });
@@ -43,8 +43,8 @@ const stmtGetQuestions = `
     asker_name,
     question_helpfulness,
     question.reported,
-    COALESCE(
-      JSONB_OBJECT_AGG(answer.id, JSONB_BUILD_OBJECT(
+    coalesce(
+      jsonb_object_agg(answer.id, jsonb_build_object(
         'id', answer.id,
         'body', answer.body,
         'date', answer.date,
