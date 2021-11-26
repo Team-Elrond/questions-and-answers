@@ -1,10 +1,10 @@
 const request = require('supertest');
 const { app } = require('../jest/common');
-const sql = require('../sql');
+const sql = require('../sql').write;
 
 const ID = 100;
 
-const sampleQuestion = () => ({
+const sampleQuestion = {
   product_id: ID,
   question_body: 'Body',
   question_date: new Date().toISOString(),
@@ -12,7 +12,7 @@ const sampleQuestion = () => ({
   asker_email: 'e@mail.com',
   question_helpfulness: 3,
   reported: false,
-});
+};
 
 async function sendQuestion(question) {
   const keys = Object.keys(question);
@@ -29,7 +29,7 @@ async function sendQuestion(question) {
   return received;
 }
 
-const sampleAnswer = () => ({
+const sampleAnswer = {
   question_id: ID,
   body: 'body',
   date: new Date().toISOString(),
@@ -38,7 +38,7 @@ const sampleAnswer = () => ({
   helpfulness: 3,
   reported: false,
   photos: 'a b c d',
-});
+};
 
 /** @returns {Promise<number>} */
 async function sendAnswer(answer) {
@@ -60,14 +60,10 @@ async function sendAnswer(answer) {
 }
 
 describe('GET /qa/questions/:question_id/answers', () => {
-  let sample;
-
-  beforeEach(() => { sample = sampleAnswer(); });
-
   it('sends results', async () => {
-    const { question_id } = await sendQuestion(sampleQuestion());
-    sample.question_id = question_id;
-    const received = await sendAnswer(sample);
+    const { question_id } = await sendQuestion(sampleQuestion);
+    const answer = { ...sampleAnswer, question_id };
+    const received = await sendAnswer(answer);
 
     const res = await request(app)
       .get(`/qa/questions/${question_id}/answers`)
@@ -78,9 +74,9 @@ describe('GET /qa/questions/:question_id/answers', () => {
   });
 
   it('sends an empty array with no results', async () => {
-    const { question_id } = await sendQuestion(sampleQuestion());
-    sample.question_id = question_id;
-    await sendAnswer(sample);
+    const { question_id } = await sendQuestion(sampleQuestion);
+    const answer = { ...sampleAnswer, question_id };
+    await sendAnswer(answer);
 
     const res = await request(app)
       .get(`/qa/questions/${question_id + 1}/answers`)
@@ -90,12 +86,11 @@ describe('GET /qa/questions/:question_id/answers', () => {
   });
 
   it('hides reported answers', async () => {
-    const { question_id } = await sendQuestion(sampleQuestion());
-    sample.question_id = question_id;
-    sample.reported = true;
-    await sendAnswer(sample);
-    sample.reported = false;
-    const received = await sendAnswer(sample);
+    const { question_id } = await sendQuestion(sampleQuestion);
+    const answer = { ...sampleAnswer, question_id, reported: true };
+    await sendAnswer(answer);
+    answer.reported = false;
+    const received = await sendAnswer(answer);
 
     const res = await request(app)
       .get(`/qa/questions/${question_id}/answers`)
@@ -105,29 +100,28 @@ describe('GET /qa/questions/:question_id/answers', () => {
   });
 
   it('splits photos appropriately', async () => {
-    const { question_id } = await sendQuestion(sampleQuestion());
-    sample.question_id = question_id;
-    await sendAnswer(sample);
-    sample.photos = '';
-    await sendAnswer(sample);
+    const { question_id } = await sendQuestion(sampleQuestion);
+    const answer = { ...sampleAnswer, question_id };
+    await sendAnswer(answer);
+    answer.photos = '';
+    await sendAnswer(answer);
 
     const res = await request(app)
       .get(`/qa/questions/${question_id}/answers`)
       .expect(200);
 
-    const photos = res.body.results
-      .map(answer => answer.photos);
+    const photos = res.body.results.map(answer => answer.photos);
 
     expect(photos).toEqual([['a', 'b', 'c', 'd'], []]);
   });
 
   it('paginates', async () => {
-    const { question_id } = await sendQuestion(sampleQuestion());
-    sample.question_id = question_id;
+    const { question_id } = await sendQuestion(sampleQuestion);
+    const answer = { ...sampleAnswer, question_id };
 
     for (let i = 1; i < 20; i += 1) {
-      sample.body = i.toString();
-      await sendAnswer(sample);
+      answer.body = i.toString();
+      await sendAnswer(answer);
     }
 
     const { body } = await request(app)
@@ -149,58 +143,54 @@ describe('GET /qa/questions/:question_id/answers', () => {
 });
 
 describe('GET /qa/questions', () => {
-  let sample;
-
-  beforeEach(() => { sample = sampleQuestion(); });
-
   it('sends results', async () => {
-    sample.product_id += 10;
-    const received = await sendQuestion(sample);
+    const question = { ...sampleQuestion, product_id: sampleQuestion.product_id + 10 };
+    const received = await sendQuestion(question);
 
     const res = await request(app)
-      .get(`/qa/questions?product_id=${sample.product_id}`)
+      .get(`/qa/questions?product_id=${question.product_id}`)
       .expect(200)
       .expect('Content-Type', /application\/json/i);
 
     expect(res.body).toEqual({
-      product_id: sample.product_id.toString(),
+      product_id: question.product_id.toString(),
       results: [received],
     });
   });
 
   it('sends an empty array with no results', async () => {
-    sample.product_id += 20;
-    await sendQuestion(sample);
+    const question = { ...sampleQuestion, product_id: sampleQuestion.product_id + 20 };
+    await sendQuestion(question);
 
     const res = await request(app)
-      .get(`/qa/questions?product_id=${sample.product_id + 30}`)
+      .get(`/qa/questions?product_id=${question.product_id + 30}`)
       .expect(200);
 
     expect(res.body.results).toEqual([]);
   });
 
   it('hides reported questions', async () => {
-    sample.product_id += 40;
-    const received = await sendQuestion(sample);
-    sample.reported = true;
-    await sendQuestion(sample);
+    const question = { ...sampleQuestion, product_id: sampleQuestion.product_id + 40 };
+    const received = await sendQuestion(question);
+    question.reported = true;
+    await sendQuestion(question);
 
     const res = await request(app)
-      .get(`/qa/questions?product_id=${sample.product_id}`)
+      .get(`/qa/questions?product_id=${question.product_id}`)
       .expect(200);
 
     expect(res.body.results).toEqual([received]);
   });
 
   it('paginates', async () => {
-    sample.product_id += 50;
+    const question = { ...sampleQuestion, product_id: sampleQuestion.product_id + 50 };
     for (let i = 1; i <= 20; i += 1) {
-      sample.question_body = i.toString();
-      await sendQuestion(sample);
+      question.question_body = i.toString();
+      await sendQuestion(question);
     }
 
     const { body } = await request(app)
-      .get(`/qa/questions?product_id=${sample.product_id}&count=3&page=4`)
+      .get(`/qa/questions?product_id=${question.product_id}&count=3&page=4`)
       .expect(200);
 
     const bodies = body.results.map(question => question.question_body);
@@ -209,16 +199,17 @@ describe('GET /qa/questions', () => {
   });
 
   it('displays only the corresponding answers', async () => {
-    const answer = sampleAnswer();
+    const question = { ...sampleQuestion };
+    const answer = { ...sampleAnswer };
     const answer_ids = [];
     for (let i = 0; i <= 5; i += 1) {
-      sample.product_id = ID + 60 + (i === 0 || i === 5 ? i : 3);
-      const { question_id } = await sendQuestion(sample);
+      question.product_id = ID + 60 + (i === 0 || i === 5 ? i : 3);
+      const { question_id } = await sendQuestion(question);
       answer.question_id = question_id;
       for (let j = 0; j <= 2; j += 1) {
         answer.reported = !j;
         const received = await sendAnswer(answer);
-        if (sample.product_id === ID + 43 && !answer.reported) {
+        if (question.product_id === ID + 43 && !answer.reported) {
           answer_ids.push(received.answer_id.toString());
         }
       }
@@ -235,17 +226,17 @@ describe('GET /qa/questions', () => {
   });
 
   it('splits photos appropriately', async () => {
-    const answer = sampleAnswer();
-    sample.product_id += 70;
-    const { question_id } = await sendQuestion(sample);
+    const question = { ...sampleQuestion, product_id: sampleQuestion.product_id + 70 };
+    const { question_id } = await sendQuestion(question);
 
+    const answer = { question_id, ...sampleAnswer };
     answer.question_id = question_id;
     await sendAnswer(answer);
     answer.photos = '';
     await sendAnswer(answer);
 
     const res = await request(app)
-      .get(`/qa/questions?product_id=${sample.product_id}`)
+      .get(`/qa/questions?product_id=${question.product_id}`)
       .expect(200);
 
     const photos = res.body.results
