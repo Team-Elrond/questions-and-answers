@@ -2,7 +2,7 @@ const express = require('express');
 const request = require('supertest');
 const { requestParser } = require('@atelier/util');
 const routes = require('../routes');
-const sql = require('../sql');
+const sql = require('../sql').read;
 
 const app = express();
 app.use(express.json());

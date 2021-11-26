@@ -1,6 +1,6 @@
 const request = require('supertest');
 const { app } = require('../jest/common');
-const sql = require('../sql');
+const sql = require('../sql').write;
 
 const ID = 100;
 

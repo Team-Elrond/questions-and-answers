@@ -1,6 +1,6 @@
 const express = require('express');
 const { asyncTry } = require('@atelier/util');
-const sql = require('../sql');
+const sql = require('../sql').read;
 
 const router = express.Router();
 
@@ -56,7 +56,7 @@ const stmtGetQuestions = `
     ) AS answers
   FROM question
   LEFT JOIN answer
-    ON answer.question_id = question.question_id  
+    ON answer.question_id = question.question_id
   WHERE product_id = $1::INT
     AND question.reported = FALSE
     AND answer.reported IS DISTINCT FROM TRUE

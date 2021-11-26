@@ -1,6 +1,6 @@
 const express = require('express');
 const { tryPut } = require('@atelier/util');
-const sql = require('../sql');
+const sql = require('../sql').write;
 
 const router = express.Router();
 

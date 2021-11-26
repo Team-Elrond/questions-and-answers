@@ -1,4 +1,4 @@
-const sql = require('../sql');
+const sql = require('../sql').write;
 
 const statements = [
   'DROP TABLE IF EXISTS answer',
