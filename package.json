@@ -1,7 +1,7 @@
 {
     "name": "@atelier/questions-and-answers",
     "version": "1.0.0",
-    "main": "app.js",
+    "main": "src/app.js",
     "repository": "https://github.com/team-elrond/questions-and-answers.git",
     "license": "MIT",
     "author": "Joshua Booth <joshua.n.booth@gmail.com>",
@@ -10,10 +10,11 @@
         "Anthony Psyk <ajpsyk@gmail.com>"
     ],
     "scripts": {
-        "start": "node app.js",
-        "dev": "nodemon app.js",
+        "start": "node src/app.js",
+        "dev": "nodemon src/app.js",
         "lint": "eslint .",
-        "test": "jest --runInBand"
+        "test": "jest --runInBand",
+        "loadtest": "loadtests/exec.sh"
     },
     "dependencies": {
         "@atelier/util": "team-elrond/atelier-util",

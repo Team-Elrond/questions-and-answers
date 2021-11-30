@@ -36,34 +36,34 @@ router.get('/qa/questions/:question_id/answers', asyncTry(async (req, res) => {
 }));
 
 const stmtGetQuestions = `
-  SELECT
-    question.question_id,
-    question_body,
-    question_date,
-    asker_name,
-    question_helpfulness,
-    question.reported,
-    coalesce(
-      jsonb_object_agg(answer.id, jsonb_build_object(
-        'id', answer.id,
-        'body', answer.body,
-        'date', answer.date,
-        'answerer_name', answer.answerer_name,
-        'helpfulness', answer.helpfulness,
-        'photos', string_to_array(answer.photos, ' ')
-      )) FILTER (WHERE answer.id IS NOT NULL),
-      '{}'
-    ) AS answers
-  FROM question
-  LEFT JOIN answer
-    ON answer.question_id = question.question_id
-  WHERE product_id = $1::INT
-    AND question.reported = FALSE
-    AND answer.reported IS DISTINCT FROM TRUE
-  GROUP BY question.question_id
-  ORDER BY question.question_id ASC
-  LIMIT $2::INT
-  OFFSET $3::INT
+SELECT
+  question.question_id,
+  question_body,
+  question_date,
+  asker_name,
+  question_helpfulness,
+  question.reported,
+  coalesce(
+    jsonb_object_agg(answer.id, jsonb_build_object(
+      'id', answer.id,
+      'body', answer.body,
+      'date', answer.date,
+      'answerer_name', answer.answerer_name,
+      'helpfulness', answer.helpfulness,
+      'photos', string_to_array(answer.photos, ' ')
+    )) FILTER (WHERE answer.id IS NOT NULL),
+    '{}'
+  ) AS answers
+FROM question
+LEFT JOIN answer
+  ON answer.question_id = question.question_id
+WHERE product_id = $1::INT
+  AND question.reported = FALSE
+  AND answer.reported IS DISTINCT FROM TRUE
+GROUP BY question.question_id
+ORDER BY question.question_id ASC
+LIMIT $2::INT
+OFFSET $3::INT
 `;
 router.get('/qa/questions', asyncTry(async (req, res) => {
   const product_id = req.queryInt('product_id');

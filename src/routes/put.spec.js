@@ -5,7 +5,7 @@ const {
   createQuestion,
   getAnswer,
   getQuestion,
-} = require('../jest/common');
+} = require('../../jest/common');
 
 const ID = 1000;
 
