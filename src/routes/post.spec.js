@@ -1,5 +1,5 @@
 const request = require('supertest');
-const { app, getQuestion, getAnswer } = require('../jest/common');
+const { app, getQuestion, getAnswer } = require('../../jest/common');
 
 const sampleQuestion = {
   product_id: 1,
