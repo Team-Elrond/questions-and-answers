@@ -9,14 +9,6 @@ parserOptions:
 extends:
 - airbnb-base
 
-globals:
-  __ENV: "readonly"
-
-settings:
-  import/core-modules:
-  - k6
-  - k6/http
-
 rules:
   arrow-parens: off
   camelcase: off

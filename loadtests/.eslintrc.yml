@@ -1,0 +1,4 @@
+rules:
+  no-undef: off
+  import/extensions: off
+  import/no-unresolved: off

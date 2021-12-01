@@ -1,10 +1,7 @@
-import { check } from 'k6';
-import http from 'k6/http';
+import test from './index.js';
 
-let product = 1000011;
+export { options } from './index.js';
 
 export default function spec() {
-  const res = http.get(`http://${__ENV.ENDPOINT}/qa/questions?product_id=${product}&count=10000`);
-  check(res, { success: r => r.status === 200 });
-  product -= 1;
+  test(offset => `qa/questions?product_id=${1000011 - offset}&`);
 }
